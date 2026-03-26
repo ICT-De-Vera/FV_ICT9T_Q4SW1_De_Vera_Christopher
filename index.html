@@ -86,7 +86,6 @@
 </head>
 <body class="d-flex justify-content-center align-items-center vh-100">
 
-
 <div class="container mt-5 card p-4" style="background-color: rgba(55, 0, 55, 0.8); max-width: 400px;">
   <h1 class="text-center text-white mb-2">Login</h1>
 
@@ -99,22 +98,28 @@
     <a href="https://www.w3schools.com/js/" target="_blank" class="text-info">JavaScript examples</a>.
   </p>
 
-
   <form onsubmit="return CheckLogin();">
     <input type="text" class="form-control" id="LOGIN" placeholder="type user here..."><br>
     <input type="password" class="form-control" id="PASSWORD" placeholder="type password here..."><br>
+
+    <div class="mb-2">
+      <input type="checkbox" id="rememberCheck" onclick="RememberMe()">
+      <label for="rememberCheck" class="text-light">Remember me</label>
+      <span id="rememberMsg" class="text-info ms-1"></span>
+    </div>
+
     <div class="captchaSection">
       <label class="labelText">
         <input type="checkbox" class="checkbox" id="captchaCheck" onclick="OpenBox()"/>
         <span class="checkMark"></span>
-        <span class="robotText">I'm not a robot</span>
+        <span class="robotText" id="captchaMsg">I'm not a robot</span>
       </label>
     </div><br>
+
     <button class="btn btn-info" type="submit">Login</button>
     <button class="btn btn-danger" type="reset" onclick="ResetCaptcha()">Reset</button>
   </form>
 </div>
-
 
 <div class="modalOverlay" id="puzzleModal">
   <div class="boxContent">
@@ -128,7 +133,6 @@
     </div>
   </div>
 </div>
-
 
 <script>
   var captchaOK = false;
@@ -158,22 +162,34 @@
   }
 
   function OpenBox() {
-    var nums = GenerateNumbs();
-    var fmt = DisplayNumbers(nums);
-    document.getElementById("puzzleGrid").innerHTML = fmt;
-    document.getElementById("captchaInput").value = "";
-    document.getElementById("puzzleModal").style.display = "flex";
-    document.getElementById("captchaCheck").checked = false;
+    let variable_name = document.getElementById("captchaCheck").checked;
+
+    switch (variable_name) {
+      case true:
+        document.getElementById("captchaMsg").innerHTML = "Captcha open, please verify.";
+        var nums = GenerateNumbs();
+        var fmt = DisplayNumbers(nums);
+        document.getElementById("puzzleGrid").innerHTML = fmt;
+        document.getElementById("captchaInput").value = "";
+        document.getElementById("puzzleModal").style.display = "flex";
+        document.getElementById("captchaCheck").checked = false;
+        break;
+
+      case false:
+        document.getElementById("captchaMsg").innerHTML = "I'm not a robot";
+        break;
+    }
   }
 
   function CheckNumbs() {
     var answer = document.getElementById("captchaInput").value;
-    if (answer == correctNumbers) {
+    if (answer === correctNumbers) {
       alert("Correct! You've verified as human.");
       captchaOK = true;
       document.getElementById("puzzleModal").style.display = "none";
       var box = document.querySelector(".checkMark");
       box.classList.add("verified");
+      document.getElementById("captchaMsg").innerHTML = "Verified!";
     } else {
       alert("Wrong numbers. Try again.");
       OpenBox();
@@ -183,16 +199,34 @@
   function CloseVerify() {
     document.getElementById("captchaCheck").checked = false;
     document.getElementById("puzzleModal").style.display = "none";
+    document.getElementById("captchaMsg").innerHTML = "I'm not a robot";
   }
 
   function ResetCaptcha(){
     captchaOK = false;
     var box = document.querySelector(".checkMark");
     box.classList.remove("verified");
+    document.getElementById("captchaMsg").innerHTML = "I'm not a robot";
+    document.getElementById("rememberCheck").checked = false;
+    document.getElementById("rememberMsg").innerHTML = "";
+  }
+
+  function RememberMe() {
+    let variable_name = document.getElementById("rememberCheck").checked;
+    let msg = document.getElementById("rememberMsg");
+
+    switch (variable_name) {
+      case true:
+        msg.innerHTML = "You will be logged in automatically on future visits.";
+        break;
+      case false:
+        msg.innerHTML = "You will be logged out after closing the page.";
+        break;
+    }
   }
 
   function CheckLogin(){
-    if (captchaOK == false) {
+    if (captchaOK === false) {
       alert("Please complete the captcha first.");
       return false;
     }
@@ -203,12 +237,13 @@
   function CheckAccount(){
     var user = document.getElementById("LOGIN").value;
     var password = document.getElementById("PASSWORD").value;
+
     if (user === "admin" && password === "admin123") {
       alert("Access granted: This account is an administrator account.");
     } else if (user === "mrbeast67" && password === "password123") {
       alert("Access granted: Welcome back, MrBeast67!");
     } else if (user === "john_doe" && password === "qwerty") {
-      alert("Access granted: Welcome back, john_doe!");  
+      alert("Access granted: Welcome back, john_doe!");
     } else if (user === "john_smith" && password === "abc123") {
       alert("Access granted: Welcome back, john_smith!");
     } else if (user === "Jinwoo13" && password === "Monarch321") {
@@ -232,7 +267,6 @@
     }
   }
 </script>
-
 
 </body>
 </html>
