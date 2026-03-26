@@ -99,10 +99,6 @@
     <a href="https://www.w3schools.com/js/" target="_blank" class="text-info">JavaScript examples</a>.
   </p>
 
-  <div class="form-check form-switch mb-3">
-    <input class="form-check-input" type="checkbox" id="noteToggle" ontoggle="toggleNote(this)">
-    <label class="form-check-label text-light" for="noteToggle">Show help</label>
-  </div>
 
   <form onsubmit="return CheckLogin();">
     <input type="text" class="form-control" id="LOGIN" placeholder="type user here..."><br>
@@ -233,15 +229,6 @@
       alert("Access granted: Welcome back, GoblinSlayer!");
     } else {
       alert("Access denied: Invalid username or password.");
-    }
-  }
-
-  function toggleNote(elem){
-    var note = document.getElementById("shortNote");
-    if (elem.checked) {
-      note.innerHTML = "Tip: Use a strong password and complete the captcha before pressing Login.";
-    } else {
-      note.innerHTML = "Please enter your username and password, then complete the captcha to log in.";
     }
   }
 </script>
