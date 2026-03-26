@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Q4 Seatwork 1</title>
+  <style>
+    body {
+      background-image: url('');
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+    .captchaSection {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 280px;
+      padding: 10px 12px;
+      border: 1px solid #d3d3d3;
+      border-radius: 4px;
+      background: #f9f9f9;
+      font-size: 13px;
+      color: #444;
+    }
+    .labelText {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .checkbox { display: none; }
+    .checkbox:checked + .checkMark { background: #2196f3; }
+    .checkMark {
+      width: 22px;
+      height: 22px;
+      border: 2px solid #c1c1c1;
+      border-radius: 3px;
+      background: #fff;
+    }
+    .checkMark.verified {
+      background: #22c55e;
+      border-color: #16a34a;
+    }
+    .robotText { user-select: none; }
+    .modalOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .boxContent {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      text-align: center;
+      max-width: 400px;
+    }
+    .boxContent h2 { margin-bottom: 20px; color: #333; }
+    .numDisplay {
+      background: #f5f5f5;
+      padding: 20px;
+      margin: 20px 0;
+      font-size: 28px;
+      letter-spacing: 15px;
+      font-family: monospace;
+      color: #333;
+    }
+    .inputField {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .buttons { margin-top: 20px; }
+    .buttons button { margin: 0 5px; }
+  </style>
+</head>
+<body class="d-flex justify-content-center align-items-center vh-100">
+
+
+<div class="container mt-5 card p-4" style="background-color: rgba(55, 0, 55, 0.8); max-width: 400px;">
+  <h1 class="text-center text-white mb-2">Login</h1>
+
+  <p class="text-light mt-3 mb-2" id="shortNote">
+    Please enter your username and password, then complete the captcha to log in.
+  </p>
+
+  <p class="text-light mb-3">
+    Some ideas were based on
+    <a href="https://www.w3schools.com/js/" target="_blank" class="text-info">JavaScript examples</a>.
+  </p>
+
+  <div class="form-check form-switch mb-3">
+    <input class="form-check-input" type="checkbox" id="noteToggle" ontoggle="toggleNote(this)">
+    <label class="form-check-label text-light" for="noteToggle">Show help</label>
+  </div>
+
+  <form onsubmit="return CheckLogin();">
+    <input type="text" class="form-control" id="LOGIN" placeholder="type user here..."><br>
+    <input type="password" class="form-control" id="PASSWORD" placeholder="type password here..."><br>
+    <div class="captchaSection">
+      <label class="labelText">
+        <input type="checkbox" class="checkbox" id="captchaCheck" onclick="OpenBox()"/>
+        <span class="checkMark"></span>
+        <span class="robotText">I'm not a robot</span>
+      </label>
+    </div><br>
+    <button class="btn btn-info" type="submit">Login</button>
+    <button class="btn btn-danger" type="reset" onclick="ResetCaptcha()">Reset</button>
+  </form>
+</div>
+
+
+<div class="modalOverlay" id="puzzleModal">
+  <div class="boxContent">
+    <h2>Verify you are human</h2>
+    <p>Enter the numbers you see:</p>
+    <div class="numDisplay" id="puzzleGrid"></div>
+    <input type="text" class="inputField" id="captchaInput" placeholder="Type numbers here">
+    <div class="buttons">
+      <button class="btn btn-success btn-sm" onclick="CheckNumbs()">Verify</button>
+      <button class="btn btn-secondary btn-sm" onclick="CloseVerify()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  var captchaOK = false;
+  var correctNumbers = "";
+
+  function GenerateNumbs() {
+    var nums = "";
+    for (var x = 1; x <= 6; x++) {
+      nums = nums + Math.floor(Math.random() * 10);
+    }
+    correctNumbers = nums;
+    return nums;
+  }
+
+  function DisplayNumbers(num) {
+    var result = "";
+    var arr = num.split("");
+    for (var j = 0; j < arr.length; j++) {
+      var digit = arr[j];
+      if (j % 2 == 0) {
+        result = result + "  " + digit + "  ";
+      } else {
+        result = result + digit + "    ";
+      }
+    }
+    return result;
+  }
+
+  function OpenBox() {
+    var nums = GenerateNumbs();
+    var fmt = DisplayNumbers(nums);
+    document.getElementById("puzzleGrid").innerHTML = fmt;
+    document.getElementById("captchaInput").value = "";
+    document.getElementById("puzzleModal").style.display = "flex";
+    document.getElementById("captchaCheck").checked = false;
+  }
+
+  function CheckNumbs() {
+    var answer = document.getElementById("captchaInput").value;
+    if (answer == correctNumbers) {
+      alert("Correct! You've verified as human.");
+      captchaOK = true;
+      document.getElementById("puzzleModal").style.display = "none";
+      var box = document.querySelector(".checkMark");
+      box.classList.add("verified");
+    } else {
+      alert("Wrong numbers. Try again.");
+      OpenBox();
+    }
+  }
+
+  function CloseVerify() {
+    document.getElementById("captchaCheck").checked = false;
+    document.getElementById("puzzleModal").style.display = "none";
+  }
+
+  function ResetCaptcha(){
+    captchaOK = false;
+    var box = document.querySelector(".checkMark");
+    box.classList.remove("verified");
+  }
+
+  function CheckLogin(){
+    if (captchaOK == false) {
+      alert("Please complete the captcha first.");
+      return false;
+    }
+    CheckAccount();
+    return false;
+  }
+
+  function CheckAccount(){
+    var user = document.getElementById("LOGIN").value;
+    var password = document.getElementById("PASSWORD").value;
+    if (user === "admin" && password === "admin123") {
+      alert("Access granted: This account is an administrator account.");
+    } else if (user === "mrbeast67" && password === "password123") {
+      alert("Access granted: Welcome back, MrBeast67!");
+    } else if (user === "john_doe" && password === "qwerty") {
+      alert("Access granted: Welcome back, john_doe!");  
+    } else if (user === "john_smith" && password === "abc123") {
+      alert("Access granted: Welcome back, john_smith!");
+    } else if (user === "Jinwoo13" && password === "Monarch321") {
+      alert("Access granted: Welcome back, Jinwoo13!");
+    } else if (user === "Bob_Builder" && password === "canwefixit") {
+      alert("Access granted: Welcome back, Bob_Builder!");
+    } else if (user === "ShadowGarden" && password === "cidkagenou321") {
+      alert("Access granted: Welcome back, ShadowGarden!");
+    } else if (user === "Silverspoonn" && password === "spideysenses_no1") {
+      alert("Access granted: Welcome back, Silverspoonn!");
+    } else if (user === "T1000_the_13th" && password === "terminator") {
+      alert("Access granted: Welcome back, T1000_the_13th!");
+    } else if (user === "StarkIndustries" && password === "iamIronman") {
+      alert("Access granted: Welcome back, StarkIndustries!");
+    } else if (user === "WayneTech" && password === "TheDarkKnight") {
+      alert("Access granted: Welcome back, WayneTech!");
+    } else if (user === "GoblinSlayer" && password === "deathtogoblins122") {
+      alert("Access granted: Welcome back, GoblinSlayer!");
+    } else {
+      alert("Access denied: Invalid username or password.");
+    }
+  }
+
+  function toggleNote(elem){
+    var note = document.getElementById("shortNote");
+    if (elem.checked) {
+      note.innerHTML = "Tip: Use a strong password and complete the captcha before pressing Login.";
+    } else {
+      note.innerHTML = "Please enter your username and password, then complete the captcha to log in.";
+    }
+  }
+</script>
+
+
+</body>
+</html>
